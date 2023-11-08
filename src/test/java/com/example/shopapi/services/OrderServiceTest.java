@@ -119,8 +119,8 @@ public class OrderServiceTest {
 
     @Test
     void createOrder_Success() {
+        Long userId = 1L;
         OrderDTO orderDTO = new OrderDTO();
-        orderDTO.setUserId(1L);
 
         ProductDTO productDTO1 = ProductMapper.mapEntityToProductDTO(product1);
         ProductDTO productDTO2 = ProductMapper.mapEntityToProductDTO(product2);
@@ -132,20 +132,19 @@ public class OrderServiceTest {
 
         orderDTO.setItems(new ArrayList<>(List.of(orderItemDTO1, orderItemDTO2, orderItemDTO3)));
 
-        given(userRepository.findById(orderDTO.getUserId())).willReturn(Optional.of(user));
+        given(userRepository.findById(userId)).willReturn(Optional.of(user));
         given(orderRepository.save(any(Order.class))).willReturn(order);
 
-        OrderDTO createdOrderDTO = orderService.createOrder(orderDTO);
+        OrderDTO createdOrderDTO = orderService.createOrder(orderDTO, userId);
 
         assertThat(createdOrderDTO.getOrderStatus()).isEqualTo(OrderStatus.PENDING);
         assertThat(createdOrderDTO.getItems()).isEqualTo(orderDTO.getItems());
-        assertThat(createdOrderDTO.getUserId()).isEqualTo(orderDTO.getUserId());
     }
 
     @Test
     void createOrder_UserDoesNotExist() {
+        Long userId = 1L;
         OrderDTO orderDTO = new OrderDTO();
-        orderDTO.setUserId(1L);
 
         ProductDTO productDTO1 = ProductMapper.mapEntityToProductDTO(product1);
         ProductDTO productDTO2 = ProductMapper.mapEntityToProductDTO(product2);
@@ -157,11 +156,11 @@ public class OrderServiceTest {
 
         orderDTO.setItems(new ArrayList<>(List.of(orderItemDTO1, orderItemDTO2, orderItemDTO3)));
 
-        given(userRepository.findById(orderDTO.getUserId())).willReturn(Optional.empty());
+        given(userRepository.findById(userId)).willReturn(Optional.empty());
 
 
 
-        assertThatThrownBy(() -> orderService.createOrder(orderDTO)).isInstanceOf(ObjectNotFoundException.class)
+        assertThatThrownBy(() -> orderService.createOrder(orderDTO, userId)).isInstanceOf(ObjectNotFoundException.class)
                 .hasMessage("Could not find user with Id 1");
 
         then(orderRepository).should(never()).save(any(Order.class));
@@ -171,7 +170,6 @@ public class OrderServiceTest {
     void updateOrder_Success() {
         OrderDTO orderDTO = new OrderDTO();
         orderDTO.setId(1L);
-        orderDTO.setUserId(1L);
         orderDTO.setOrderStatus(OrderStatus.COMPLETED);
 
         Order updatedOrder = new Order();
@@ -190,7 +188,6 @@ public class OrderServiceTest {
     void updateOrder_OrderDoesNotExist() {
         OrderDTO orderDTO = new OrderDTO();
         orderDTO.setId(1L);
-        orderDTO.setUserId(1L);
         orderDTO.setOrderStatus(OrderStatus.COMPLETED);
 
         given(orderRepository.findById(orderDTO.getId())).willReturn(Optional.empty());

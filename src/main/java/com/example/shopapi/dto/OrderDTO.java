@@ -16,5 +16,4 @@ public class OrderDTO {
     private List<OrderItemDTO> items;
     private OrderStatus orderStatus;
     private LocalDateTime timePlaced;
-    private Long userId;
 }

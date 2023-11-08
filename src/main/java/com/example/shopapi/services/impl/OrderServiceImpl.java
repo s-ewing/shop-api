@@ -26,8 +26,7 @@ public class OrderServiceImpl implements OrderService {
         this.userRepository = userRepository;
     }
     @Override
-    public OrderDTO createOrder(OrderDTO orderDTO) {
-        Long userId = orderDTO.getUserId();
+    public OrderDTO createOrder(OrderDTO orderDTO, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ObjectNotFoundException("user", userId));
         LocalDateTime now = LocalDateTime.now();
         List<OrderItem> items = orderDTO.getItems().stream().map(OrderMapper::mapOrderItemDTOtoEntity).collect(Collectors.toList());

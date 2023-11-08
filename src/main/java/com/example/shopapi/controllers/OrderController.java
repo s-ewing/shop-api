@@ -25,10 +25,8 @@ public class OrderController {
                                                 @RequestHeader(name="Authorization") String token) {
         String jwt = token.replace("Bearer ", "");
         Long userId = Long.parseLong(jwtDecoder.decode(jwt).getSubject());
-        if (!userId.equals(orderDTO.getUserId())) {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-        return new ResponseEntity<>(orderService.createOrder(orderDTO), HttpStatus.OK);
+        System.out.println(userId);
+        return new ResponseEntity<>(orderService.createOrder(orderDTO, userId), HttpStatus.OK);
     }
 
     @PutMapping
