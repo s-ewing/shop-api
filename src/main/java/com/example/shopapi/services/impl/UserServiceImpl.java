@@ -20,6 +20,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
@@ -67,13 +69,12 @@ public class UserServiceImpl implements UserService {
     public UserResponseDTO updateUser(UserUpdateDTO userUpdateDTO, Long id) {
         User existingUser = userRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("user", id));
         User updatedUser = UserMapper.mapUserUpdateDTOtoEntity(userUpdateDTO);
-        existingUser.setName(updatedUser.getName());
-        existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
-        existingUser.setEmail(updatedUser.getEmail());
-        existingUser.setAddress(updatedUser.getAddress());
-        if (userRepository.findByEmail(existingUser.getEmail()).isPresent()) {
+        if (!Objects.equals(existingUser.getEmail(), updatedUser.getEmail()) && userRepository.findByEmail(userUpdateDTO.getEmail()).isPresent()) {
             throw new DuplicateEmailException("A user with that email address already exists.");
         }
+        existingUser.setName(updatedUser.getName());
+        existingUser.setEmail(updatedUser.getEmail());
+        existingUser.setAddress(updatedUser.getAddress());
         User savedUser = userRepository.save(existingUser);
         return UserMapper.mapEntityToUserResponseDTO(savedUser);
     }

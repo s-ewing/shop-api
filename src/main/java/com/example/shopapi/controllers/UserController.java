@@ -31,24 +31,17 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<UserResponseDTO> loginUser(@Valid @RequestBody UserRequestDTO userRequestDTO) {
         UserResponseDTO userResponseDTO = userService.loginUser(userRequestDTO);
-        if (userResponseDTO != null) {
-            return new ResponseEntity<>(userResponseDTO, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-
+        return new ResponseEntity<>(userResponseDTO, HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping
     public ResponseEntity<UserResponseDTO> updateUser(@Valid @RequestBody UserUpdateDTO userUpdateDTO,
-                                                      @PathVariable Long id,
                                                       @RequestHeader(name="Authorization") String token) {
         String jwt = token.replace("Bearer ", "");
         Long userId = Long.parseLong(jwtDecoder.decode(jwt).getSubject());
-        if (!userId.equals(id)) {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-        return new ResponseEntity<>(userService.updateUser(userUpdateDTO, userId), HttpStatus.OK);
+        UserResponseDTO updatedUserDTO = userService.updateUser(userUpdateDTO, userId);
+        updatedUserDTO.setJwt(jwt);
+        return new ResponseEntity<>(updatedUserDTO, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

@@ -238,8 +238,6 @@ class UserServiceTest {
 
         UserResponseDTO userResponseDTO = userService.updateUser(userUpdateDTO, id);
 
-        then(passwordEncoder).should().encode(userUpdateDTO.getPassword());
-
         assertThat(user.getName()).isEqualTo(userUpdateDTO.getName());
         assertThat(user.getEmail()).isEqualTo(userUpdateDTO.getEmail());
         assertThat(user.getAddress()).isEqualTo(AddressMapper.mapAddressDTOtoEntity(userUpdateDTO.getAddress()));
