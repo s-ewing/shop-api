@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class OrderItemDTO {
     @NotNull
-    ProductDTO productDTO;
+    ProductDTO product;
     @Min(value = 1)
     Integer quantity;
 }

@@ -32,14 +32,14 @@ public class OrderMapper {
 
     public static OrderItem mapOrderItemDTOtoEntity(OrderItemDTO orderItemDTO) {
         OrderItem orderItem = new OrderItem();
-        orderItem.setProduct(ProductMapper.mapProductDTOtoEntity(orderItemDTO.getProductDTO()));
+        orderItem.setProduct(ProductMapper.mapProductDTOtoEntity(orderItemDTO.getProduct()));
         orderItem.setQuantity(orderItemDTO.getQuantity());
         return orderItem;
     }
 
     public static OrderItemDTO mapEntityToOrderItemDTO(OrderItem orderItem) {
         OrderItemDTO orderItemDTO = new OrderItemDTO();
-        orderItemDTO.setProductDTO(ProductMapper.mapEntityToProductDTO(orderItem.getProduct()));
+        orderItemDTO.setProduct(ProductMapper.mapEntityToProductDTO(orderItem.getProduct()));
         orderItemDTO.setQuantity(orderItem.getQuantity());
         return orderItemDTO;
     }
