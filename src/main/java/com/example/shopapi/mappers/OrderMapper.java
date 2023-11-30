@@ -27,6 +27,7 @@ public class OrderMapper {
         orderDTO.setId(order.getId());
         orderDTO.setOrderStatus(order.getOrderStatus());
         orderDTO.setTimePlaced(order.getTimePlaced());
+        orderDTO.setTotal(order.getTotal());
         return orderDTO;
     }
 

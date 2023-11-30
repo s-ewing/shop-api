@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -16,4 +17,5 @@ public class OrderDTO {
     private List<OrderItemDTO> items;
     private OrderStatus orderStatus;
     private LocalDateTime timePlaced;
+    private BigDecimal total;
 }

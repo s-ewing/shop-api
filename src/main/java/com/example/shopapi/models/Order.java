@@ -4,10 +4,7 @@ import com.example.shopapi.enums.OrderStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.Hibernate;
 
 import java.math.BigDecimal;
@@ -46,6 +43,13 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    public Order(List<OrderItem> items, OrderStatus orderStatus, LocalDateTime timePlaced, User user) {
+        this.items = items;
+        this.orderStatus = orderStatus;
+        this.timePlaced = timePlaced;
+        this.user = user;
+    }
 
     public BigDecimal getTotal() {
         return items.stream().map(OrderItem::getSubTotal).reduce(BigDecimal.ZERO, BigDecimal::add);

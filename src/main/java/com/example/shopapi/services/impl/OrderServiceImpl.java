@@ -28,13 +28,8 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDTO createOrder(OrderDTO orderDTO, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ObjectNotFoundException("user", userId));
-        LocalDateTime now = LocalDateTime.now();
         List<OrderItem> items = orderDTO.getItems().stream().map(OrderMapper::mapOrderItemDTOtoEntity).collect(Collectors.toList());
-        Order order = new Order();
-        order.setItems(items);
-        order.setTimePlaced(now);
-        order.setOrderStatus(OrderStatus.PENDING);
-        order.setUser(user);
+        Order order = new Order(items, OrderStatus.PENDING, LocalDateTime.now(), user);
         items.forEach(item -> item.setOrder(order));
         Order savedOrder = orderRepository.save(order);
         return OrderMapper.mapEntityToOrderDTO(savedOrder);
