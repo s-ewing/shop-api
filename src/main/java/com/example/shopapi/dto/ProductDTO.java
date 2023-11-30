@@ -1,6 +1,7 @@
 package com.example.shopapi.dto;
 
 import com.example.shopapi.enums.ProductCategory;
+import com.example.shopapi.enums.ProductDepartment;
 import com.example.shopapi.models.Product;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
@@ -31,6 +32,9 @@ public class ProductDTO {
     private String imgSrc;
     @NotEmpty(message = "Product must have one or more categories")
     private List<ProductCategory> categories;
+
+    @NotEmpty(message = "Product must have one or more departments")
+    private List<ProductDepartment> departments;
 
     public ProductDTO(Product product) {
         this.id = product.getId();

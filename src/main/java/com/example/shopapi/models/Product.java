@@ -1,6 +1,7 @@
 package com.example.shopapi.models;
 
 import com.example.shopapi.enums.ProductCategory;
+import com.example.shopapi.enums.ProductDepartment;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
@@ -52,6 +53,12 @@ public class Product {
     @CollectionTable(name = "product_categories", joinColumns = @JoinColumn(name = "product_id"))
     @Enumerated(EnumType.STRING)
     private List<ProductCategory> categories;
+
+    @NotEmpty(message = "Product must have one or more departments")
+    @ElementCollection
+    @CollectionTable(name = "product_departments", joinColumns = @JoinColumn(name = "product_id"))
+    @Enumerated(EnumType.STRING)
+    private List<ProductDepartment> departments;
 
     @Override
     public boolean equals(Object o) {
