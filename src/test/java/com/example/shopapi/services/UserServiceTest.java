@@ -6,6 +6,7 @@ import com.example.shopapi.dto.UserResponseDTO;
 import com.example.shopapi.dto.UserUpdateDTO;
 import com.example.shopapi.enums.OrderStatus;
 import com.example.shopapi.enums.ProductCategory;
+import com.example.shopapi.enums.ProductDepartment;
 import com.example.shopapi.enums.Role;
 import com.example.shopapi.exceptions.DuplicateEmailException;
 import com.example.shopapi.exceptions.ObjectNotFoundException;
@@ -76,14 +77,16 @@ class UserServiceTest {
         product1.setDescription("productDescription");
         product1.setPrice(BigDecimal.valueOf(1));
         product1.setImgSrc("productImgSrc");
-        product1.setCategories(new ArrayList<>(List.of(ProductCategory.MENS, ProductCategory.SHOES)));
+        product1.setCategories(new ArrayList<>(List.of(ProductCategory.SHOES)));
+        product1.setDepartments(new ArrayList<>(List.of(ProductDepartment.MENS)));
 
         product2.setId(2L);
         product2.setName("productName");
         product2.setDescription("productDescription");
         product2.setPrice(BigDecimal.valueOf(2));
         product2.setImgSrc("productImgSrc");
-        product2.setCategories(new ArrayList<>(List.of(ProductCategory.WOMENS, ProductCategory.SHOES)));
+        product2.setCategories(new ArrayList<>(List.of(ProductCategory.SHOES)));
+        product2.setDepartments(new ArrayList<>(List.of(ProductDepartment.WOMENS)));
 
         product3.setId(3L);
         product3.setName("productName");

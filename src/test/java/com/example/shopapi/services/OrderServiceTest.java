@@ -5,6 +5,7 @@ import com.example.shopapi.dto.OrderItemDTO;
 import com.example.shopapi.dto.ProductDTO;
 import com.example.shopapi.enums.OrderStatus;
 import com.example.shopapi.enums.ProductCategory;
+import com.example.shopapi.enums.ProductDepartment;
 import com.example.shopapi.enums.Role;
 import com.example.shopapi.exceptions.ObjectNotFoundException;
 import com.example.shopapi.mappers.OrderMapper;
@@ -62,14 +63,16 @@ public class OrderServiceTest {
         product1.setDescription("productDescription");
         product1.setPrice(BigDecimal.valueOf(1));
         product1.setImgSrc("productImgSrc");
-        product1.setCategories(new ArrayList<>(List.of(ProductCategory.MENS, ProductCategory.SHOES)));
+        product1.setCategories(new ArrayList<>(List.of(ProductCategory.SHOES)));
+        product1.setDepartments(new ArrayList<>(List.of(ProductDepartment.MENS)));
 
         product2.setId(2L);
         product2.setName("productName");
         product2.setDescription("productDescription");
         product2.setPrice(BigDecimal.valueOf(2));
         product2.setImgSrc("productImgSrc");
-        product2.setCategories(new ArrayList<>(List.of(ProductCategory.WOMENS, ProductCategory.SHOES)));
+        product2.setCategories(new ArrayList<>(List.of(ProductCategory.SHOES)));
+        product2.setDepartments(new ArrayList<>(List.of(ProductDepartment.WOMENS)));
 
         product3.setId(3L);
         product3.setName("productName");
@@ -168,6 +171,14 @@ public class OrderServiceTest {
 
     @Test
     void updateOrder_Success() {
+        ProductDTO productDTO1 = ProductMapper.mapEntityToProductDTO(product1);
+        ProductDTO productDTO2 = ProductMapper.mapEntityToProductDTO(product2);
+        ProductDTO productDTO3 = ProductMapper.mapEntityToProductDTO(product3);
+
+        OrderItemDTO orderItemDTO1 = OrderMapper.mapEntityToOrderItemDTO(orderItem1);
+        OrderItemDTO orderItemDTO2 = OrderMapper.mapEntityToOrderItemDTO(orderItem2);
+        OrderItemDTO orderItemDTO3 = OrderMapper.mapEntityToOrderItemDTO(orderItem3);
+
         OrderDTO orderDTO = new OrderDTO();
         orderDTO.setId(1L);
         orderDTO.setOrderStatus(OrderStatus.COMPLETED);
@@ -175,6 +186,7 @@ public class OrderServiceTest {
         Order updatedOrder = new Order();
         updatedOrder.setId(1L);
         updatedOrder.setOrderStatus(OrderStatus.COMPLETED);
+        updatedOrder.setItems(List.of(orderItem1, orderItem2, orderItem3));
 
         given(orderRepository.findById(orderDTO.getId())).willReturn(Optional.of(order));
         given(orderRepository.save(any(Order.class))).willReturn(updatedOrder);
