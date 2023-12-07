@@ -14,6 +14,7 @@ import com.example.shopapi.models.*;
 import com.example.shopapi.repositories.OrderRepository;
 import com.example.shopapi.repositories.UserRepository;
 import com.example.shopapi.services.impl.OrderServiceImpl;
+import com.stripe.exception.StripeException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -121,7 +122,7 @@ public class OrderServiceTest {
     }
 
     @Test
-    void createOrder_Success() {
+    void createOrder_Success() throws StripeException {
         Long userId = 1L;
         OrderDTO orderDTO = new OrderDTO();
 

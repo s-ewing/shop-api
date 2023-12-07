@@ -2,6 +2,7 @@ package com.example.shopapi.mappers;
 
 import com.example.shopapi.dto.OrderDTO;
 import com.example.shopapi.dto.OrderItemDTO;
+import com.example.shopapi.enums.OrderStatus;
 import com.example.shopapi.models.Order;
 import com.example.shopapi.models.OrderItem;
 
@@ -25,9 +26,14 @@ public class OrderMapper {
             orderDTO.setItems(items);
         }
         orderDTO.setId(order.getId());
-        orderDTO.setOrderStatus(order.getOrderStatus());
+        if (order.getOrderStatus() == OrderStatus.PENDING) {
+            orderDTO.setOrderStatus(OrderStatus.CANCELED);
+        } else {
+            orderDTO.setOrderStatus(order.getOrderStatus());
+        }
         orderDTO.setTimePlaced(order.getTimePlaced());
         orderDTO.setTotal(order.getTotal());
+        orderDTO.setStripeClientSecret(order.getStripeClientSecret());
         return orderDTO;
     }
 

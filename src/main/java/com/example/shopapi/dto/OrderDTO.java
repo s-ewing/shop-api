@@ -18,4 +18,5 @@ public class OrderDTO {
     private OrderStatus orderStatus;
     private LocalDateTime timePlaced;
     private BigDecimal total;
+    private String stripeClientSecret;
 }

@@ -56,6 +56,7 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> {
+                    auth.requestMatchers(HttpMethod.PUT, "/orders").permitAll();
                     auth.requestMatchers(HttpMethod.POST, "/users/**").permitAll();
                     auth.requestMatchers(HttpMethod.PUT, "/users/**").hasRole(Role.USER.name());
                     auth.requestMatchers(HttpMethod.DELETE, "/users/**").hasRole(Role.ADMIN.name());
