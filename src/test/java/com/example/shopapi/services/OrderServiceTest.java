@@ -8,6 +8,7 @@ import com.example.shopapi.enums.ProductCategory;
 import com.example.shopapi.enums.ProductDepartment;
 import com.example.shopapi.enums.Role;
 import com.example.shopapi.exceptions.ObjectNotFoundException;
+import com.example.shopapi.exceptions.StripeSessionNotFoundException;
 import com.example.shopapi.mappers.OrderMapper;
 import com.example.shopapi.mappers.ProductMapper;
 import com.example.shopapi.models.*;
@@ -15,6 +16,7 @@ import com.example.shopapi.repositories.OrderRepository;
 import com.example.shopapi.repositories.UserRepository;
 import com.example.shopapi.services.impl.OrderServiceImpl;
 import com.stripe.exception.StripeException;
+import com.stripe.model.checkout.Session;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,6 +44,8 @@ public class OrderServiceTest {
 
     @Mock
     UserRepository userRepository;
+    @Mock
+    StripeService stripeService;
 
     @InjectMocks
     OrderServiceImpl orderService;
@@ -136,13 +140,24 @@ public class OrderServiceTest {
 
         orderDTO.setItems(new ArrayList<>(List.of(orderItemDTO1, orderItemDTO2, orderItemDTO3)));
 
+        Session mockSession = new Session();
+        mockSession.setId("test_id");
+        mockSession.setClientSecret("test_secret");
+        order.setStripeSessionId(mockSession.getId());
+        order.setStripeClientSecret(mockSession.getClientSecret());
+
         given(userRepository.findById(userId)).willReturn(Optional.of(user));
+        given(stripeService
+                .createCheckoutSession(new ArrayList<>(List.of(orderItemDTO1, orderItemDTO2, orderItemDTO3))))
+                .willReturn(mockSession);
         given(orderRepository.save(any(Order.class))).willReturn(order);
+        order.setOrderStatus(OrderStatus.PAID);
 
         OrderDTO createdOrderDTO = orderService.createOrder(orderDTO, userId);
 
-        assertThat(createdOrderDTO.getOrderStatus()).isEqualTo(OrderStatus.PENDING);
+        assertThat(createdOrderDTO.getOrderStatus()).isEqualTo(OrderStatus.PAID);
         assertThat(createdOrderDTO.getItems()).isEqualTo(orderDTO.getItems());
+        assertThat(createdOrderDTO.getStripeClientSecret()).isEqualTo(mockSession.getClientSecret());
     }
 
     @Test
@@ -171,42 +186,13 @@ public class OrderServiceTest {
     }
 
     @Test
-    void updateOrder_Success() {
-        ProductDTO productDTO1 = ProductMapper.mapEntityToProductDTO(product1);
-        ProductDTO productDTO2 = ProductMapper.mapEntityToProductDTO(product2);
-        ProductDTO productDTO3 = ProductMapper.mapEntityToProductDTO(product3);
-
-        OrderItemDTO orderItemDTO1 = OrderMapper.mapEntityToOrderItemDTO(orderItem1);
-        OrderItemDTO orderItemDTO2 = OrderMapper.mapEntityToOrderItemDTO(orderItem2);
-        OrderItemDTO orderItemDTO3 = OrderMapper.mapEntityToOrderItemDTO(orderItem3);
-
-        OrderDTO orderDTO = new OrderDTO();
-        orderDTO.setId(1L);
-        orderDTO.setOrderStatus(OrderStatus.COMPLETED);
-
-        Order updatedOrder = new Order();
-        updatedOrder.setId(1L);
-        updatedOrder.setOrderStatus(OrderStatus.COMPLETED);
-        updatedOrder.setItems(List.of(orderItem1, orderItem2, orderItem3));
-
-        given(orderRepository.findById(orderDTO.getId())).willReturn(Optional.of(order));
-        given(orderRepository.save(any(Order.class))).willReturn(updatedOrder);
-
-        OrderDTO updatedOrderDTO = orderService.updateOrder(orderDTO);
-
-        assertThat(updatedOrderDTO.getOrderStatus()).isEqualTo(orderDTO.getOrderStatus());
-    }
-
-    @Test
     void updateOrder_OrderDoesNotExist() {
-        OrderDTO orderDTO = new OrderDTO();
-        orderDTO.setId(1L);
-        orderDTO.setOrderStatus(OrderStatus.COMPLETED);
+        String sessionId = "abc";
 
-        given(orderRepository.findById(orderDTO.getId())).willReturn(Optional.empty());
+        given(orderRepository.findByStripeSessionId(sessionId)).willReturn(Optional.empty());
 
-        assertThatThrownBy(() -> orderService.updateOrder(orderDTO)).isInstanceOf(ObjectNotFoundException.class)
-                .hasMessage("Could not find order with Id 1");
+        assertThatThrownBy(() -> orderService.updateOrderWithPaymentStatus(sessionId)).isInstanceOf(StripeSessionNotFoundException.class)
+                .hasMessage("Could not find " + "order" + "with session id " + sessionId);
 
         then(orderRepository).should(never()).save(any(Order.class));
     }
